@@ -1,0 +1,31 @@
+FACTS=35 RULES=36
+
+TEST1 dengue -> diseases=[dengue] actions=[rest_fluids_paracetamol_watch_warning_signs] (rules_fired=3)
+TEST2 severe dengue -> diseases=[severe_dengue] actions=[seek_emergency_care]
+TEST3 malaria -> diseases=[malaria] actions=[urgent_blood_test_and_antimalarial_treatment]
+TEST4 typhoid -> diseases=[typhoid] actions=[see_doctor_for_antibiotics]
+TEST5 covid -> diseases=[covid19] actions=[stay_home_and_get_tested]
+TEST6 flu -> diseases=[influenza] actions=[rest_fluids_antivirals_if_high_risk]
+TEST7 cold -> diseases=[common_cold] actions=[supportive_care_home_rest]
+TEST8 chikungunya -> diseases=[chikungunya] actions=[rest_fluids_pain_relief]
+TEST9 leptospirosis -> diseases=[leptospirosis] actions=[urgent_medical_review_possible_antibiotics]
+TEST10 fallback -> diseases=[] actions=[see_doctor_further_tests]
+TEST11 empty -> diseases=[] actions=[]
+TEST12 malaria-travel fever -> diseases=[] actions=[see_doctor_report_travel]
+
+--- BACKWARD CHAINING ---
+BC1 prove suspected(dengue) from F1: SUCCESS
+  Goal: Suspected: Dengue Fever
+    To prove Suspected: Dengue Fever -> uses Rule r13: Dengue pattern present with no warning signs -> suspected (non-severe) dengue.
+      To prove [derived pattern] dengue_pattern -> uses Rule r05: Fever with severe headache, pain behind the eyes and joint pain matches the WHO dengue symptom list.
+        Patient currently has fever (38C or above). : KNOWN (reported / given fact)
+        Headache is severe. : KNOWN (reported / given fact)
+        Pain behind the eyes. : KNOWN (reported / given fact)
+        Patient reports joint pain. : KNOWN (reported / given fact)
+      => [derived pattern] dengue_pattern established.
+      NOT([derived] hemorrhagic_warning_signs) : holds because [derived] hemorrhagic_warning_signs could not be proven
+    => Suspected: Dengue Fever established.
+  RESULT: Goal successfully PROVEN.
+BC2 prove suspected(malaria) from F1 (dengue facts): correctly FAILED
+
+ALL SMOKE TESTS COMPLETED OK

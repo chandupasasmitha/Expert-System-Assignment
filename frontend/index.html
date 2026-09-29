@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Febrile Illness Advisory Expert System</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div>
+      <div class="brand-title">Febrile Illness Advisory Expert System</div>
+      <div class="brand-sub">A Prolog-based Expert System &middot; Forward &amp; Backward Chaining &middot; Full Explanation Facility</div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="home">Home</button>
+    <button class="tab-btn" data-tab="input">1. Input</button>
+    <button class="tab-btn" data-tab="inference">2. Inference</button>
+    <button class="tab-btn" data-tab="results">3. Results</button>
+    <button class="tab-btn" data-tab="kb">Knowledge Base</button>
+    <button class="tab-btn" data-tab="demo">Demo / Testing</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============================== HOME ============================== -->
+  <section class="tab-panel active" id="tab-home">
+    <div class="card hero">
+      <h1>Febrile Illness Advisory Expert System</h1>
+      <p class="lede">
+        This Expert System specialises in the <strong>preliminary differential assessment of common
+        febrile (fever-associated) illnesses</strong> &mdash; Dengue Fever, Severe Dengue, Malaria,
+        Typhoid Fever, COVID-19, Influenza, the Common Cold, Chikungunya and Leptospirosis.
+      </p>
+      <div class="grid3">
+        <div class="info-box">
+          <h3>What problem it solves</h3>
+          <p>Many febrile illnesses share overlapping early symptoms, which makes self-assessment hard.
+          This system guides a user through structured questions and reasons over a documented medical
+          knowledge base to suggest which illness(es) are most consistent with the reported symptoms.</p>
+        </div>
+        <div class="info-box">
+          <h3>What it provides</h3>
+          <p>One or more <strong>suspected condition(s)</strong>, a matching
+          <strong>recommended next action</strong> (e.g. seek emergency care, rest and monitor, get tested),
+          and &mdash; critically &mdash; the complete <strong>chain of reasoning</strong> behind that
+          conclusion: which facts were used and which rules fired.</p>
+        </div>
+        <div class="info-box">
+          <h3>Why an Expert System</h3>
+          <p>The domain is naturally rule-based (WHO/CDC diagnostic guidance is written as symptom
+          combinations), benefits from transparent, explainable reasoning rather than a "black box"
+          answer, and has a knowledge base small enough to encode and audit, yet rich enough to
+          demonstrate genuine forward and backward chaining.</p>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-primary" id="btn-start">Start a Consultation &rarr;</button>
+        <button class="btn btn-ghost" data-goto="kb">Inspect the Knowledge Base</button>
+        <button class="btn btn-ghost" data-goto="demo">Try a Demo Scenario</button>
+      </div>
+      <p class="disclaimer">&#9888; Educational university assignment demo only &mdash; NOT a real medical
+      diagnostic tool. Always consult a qualified clinician for real symptoms.</p>
+    </div>
+  </section>
+
+  <!-- ============================== INPUT ============================== -->
+  <section class="tab-panel" id="tab-input">
+    <div class="card">
+      <h2>Step 1 &mdash; Report Symptoms &amp; Exposure</h2>
+      <p class="muted">Select everything that applies. Nothing is required &mdash; you can also leave
+      everything blank to test the "no symptoms" edge case.</p>
+      <div id="fact-groups"><p class="muted">Loading knowledge base facts&hellip;</p></div>
+      <div class="cta-row">
+        <button class="btn btn-ghost" id="btn-clear-input">Clear all</button>
+        <button class="btn btn-primary" id="btn-to-inference">Continue to Inference &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== INFERENCE ============================== -->
+  <section class="tab-panel" id="tab-inference">
+    <div class="card">
+      <h2>Step 2 &mdash; Choose an Inference Mechanism</h2>
+      <p class="muted">Selected facts: <span id="selected-count">0</span> &nbsp;
+        <button class="link-btn" data-goto="input">(edit)</button></p>
+
+      <div class="grid2">
+        <div class="method-box">
+          <h3>&#8594; Forward Chaining</h3>
+          <p>Data-driven: starts from your reported facts and fires every applicable rule, deriving
+          new intermediate facts until no more rules can fire, arriving at whatever conclusion(s)
+          the facts support.</p>
+          <button class="btn btn-primary" id="btn-run-forward">Run Forward Chaining</button>
+        </div>
+        <div class="method-box">
+          <h3>&#8592; Backward Chaining</h3>
+          <p>Goal-driven: pick a specific disease or action to investigate. The engine starts from
+          that goal and works backward, trying to prove it from your reported facts.</p>
+          <label class="field-label">Goal type</label>
+          <select id="goal-type">
+            <option value="disease">Suspected disease</option>
+            <option value="action">Recommended action</option>
+          </select>
+          <label class="field-label">Goal</label>
+          <select id="goal-id"></select>
+          <button class="btn btn-primary" id="btn-run-backward">Run Backward Chaining</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== RESULTS ============================== -->
+  <section class="tab-panel" id="tab-results">
+    <div class="card" id="results-wrap">
+      <h2>Step 3 &mdash; Results &amp; Explanation</h2>
+      <div id="results-content">
+        <p class="muted">Run forward or backward chaining first to see results here.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== KNOWLEDGE BASE ============================== -->
+  <section class="tab-panel" id="tab-kb">
+    <div class="card">
+      <h2>Knowledge Base Inspector</h2>
+      <p class="muted">For examiner / viva demonstration &mdash; every fact and rule actually used by the
+      inference engines, exactly as loaded from <code>prolog/facts.pl</code> and
+      <code>prolog/rules.pl</code>.</p>
+      <div class="kb-subtabs">
+        <button class="kb-subtab-btn active" data-sub="facts">Facts (<span id="fact-count">-</span>)</button>
+        <button class="kb-subtab-btn" data-sub="rules">Rules (<span id="rule-count">-</span>)</button>
+      </div>
+      <div class="kb-sub-panel active" id="kb-facts">
+        <table class="kb-table" id="facts-table">
+          <thead><tr><th>ID</th><th>Prolog Term</th><th>Meaning</th><th>Source</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="kb-sub-panel" id="kb-rules">
+        <table class="kb-table" id="rules-table">
+          <thead><tr><th>ID</th><th>Lvl</th><th>IF (Conditions)</th><th>THEN (Conclusion)</th><th>Explanation</th><th>Source</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DEMO ============================== -->
+  <section class="tab-panel" id="tab-demo">
+    <div class="card">
+      <h2>Demo / Testing Scenarios</h2>
+      <p class="muted">Predefined scenarios for quick examiner testing. Each button loads the scenario's
+      facts and immediately runs that inference mode.</p>
+      <div id="examples-list"><p class="muted">Loading examples&hellip;</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Expert System Assignment &middot; SWI-Prolog + HTTP API + Vanilla JS UI &middot; See <code>README.md</code> and <code>USER_MANUAL.md</code>
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

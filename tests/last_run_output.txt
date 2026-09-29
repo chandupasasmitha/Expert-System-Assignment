@@ -1,0 +1,43 @@
+ID    Scenario                                 Expected Disease Actual           Expected Action                  Actual                           Status
+TC01  Classic non-severe dengue                dengue           ['dengue']       rest_fluids_paracetamol_watch_wa ['rest_fluids_paracetamol_watch_ PASS
+TC02  Severe dengue (warning signs)            severe_dengue    ['severe_dengue'] seek_emergency_care              ['seek_emergency_care']          PASS
+TC03  Malaria after endemic travel             malaria          ['malaria']      urgent_blood_test_and_antimalari ['urgent_blood_test_and_antimala PASS
+TC04  Typhoid fever                            typhoid          ['typhoid']      see_doctor_for_antibiotics       ['see_doctor_for_antibiotics']   PASS
+TC05  COVID-19 with known contact              covid19          ['covid19']      stay_home_and_get_tested         ['stay_home_and_get_tested']     PASS
+TC06  Influenza                                influenza        ['influenza']    rest_fluids_antivirals_if_high_r ['rest_fluids_antivirals_if_high PASS
+TC07  Common cold                              common_cold      ['common_cold']  supportive_care_home_rest        ['supportive_care_home_rest']    PASS
+TC08  Chikungunya                              chikungunya      ['chikungunya']  rest_fluids_pain_relief          ['rest_fluids_pain_relief']      PASS
+TC09  Leptospirosis                            leptospirosis    ['leptospirosis'] urgent_medical_review_possible_a ['urgent_medical_review_possible PASS
+TC10  Ambiguous prolonged fever (fallback/boun None             []               see_doctor_further_tests         ['see_doctor_further_tests']     PASS
+TC11  No symptoms at all (edge case)           None             []               None                             []                               PASS
+TC17  Fever after malaria-area travel, no chil None             []               see_doctor_report_travel         ['see_doctor_report_travel']     PASS
+TC18  Short high fever, no pattern (r35 -> r36 None             []               see_doctor_further_tests         ['see_doctor_further_tests']     PASS
+
+--- Rules fired per case ---
+TC01  r05, r13, r25
+TC02  r01, r05, r14, r24
+TC03  r07, r15, r26
+TC04  r08, r16, r27
+TC05  r10, r17, r28
+TC06  r10, r19, r29
+TC07  r10, r21, r30
+TC08  r11, r22, r31
+TC09  r12, r23, r32
+TC10  r33
+TC11  (none)
+TC17  r34
+TC18  r35, r36
+
+--- Error handling tests ---
+TC12 unknown fact ids -> ok: True unknown: ['f99', 'not_a_real_id'] PASS
+TC13 missing fact_ids key -> HTTP 400 {'error': 'Request could not be processed (no result).', 'ok': False} PASS
+
+--- Backward chaining tests ---
+TC14 prove dengue from dengue facts -> proven: True PASS
+TC15 prove malaria from dengue facts (should fail) -> proven: False PASS
+       attempted rule lines include failure diagnostics: True
+TC16 prove chikungunya recommend action -> proven: True PASS
+
+Knowledge base size -> facts=35 rules=36 PASS
+
+All API tests completed.
